@@ -5,7 +5,7 @@ Repository containing development and production containers
 Container for a development database, populated with mock data, both encrypted and in clear text;\
 To be used by developers in implementing client side cryptography\
 Schema for the database is:
-```json
+```json5
 {
     "_id": ObjectID(), //can be ignored
     "email": "john.doe@getnada.com", //unique index
