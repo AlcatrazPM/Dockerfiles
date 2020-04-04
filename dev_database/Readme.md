@@ -12,4 +12,8 @@ python3 -m pip install pymongo
 ```
 
 ## Setup
-Run init.sh.
+```
+chmod +x init.sh
+./init.sh [PORT]
+```
+Default port is 27017
