@@ -13,6 +13,6 @@ sudo docker run --publish $((PORT)):27017 --detach -v mongodb_data:/data/db --na
 
 # Uncomment this to use Dockerfile
 # sudo docker build -t my_mongo:latest .
-# sudo docker run --publish $((PORT)):27017 --detach -v mongodb_data:/data/db -name mongo my_mongo
+# sudo docker run --publish $((PORT)):27017 --detach -v mongodb_data:/data/db --name mongo my_mongo
 
 python3 create_database.py $((PORT))

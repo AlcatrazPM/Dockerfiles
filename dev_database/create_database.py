@@ -8,7 +8,7 @@ from pprint import pprint
 if __name__ == "__main__":
     port = int(sys.argv[1])
 
-    with open("entries.in") as entries:
+    with open("entries.json") as entries:
         put = json.loads(entries.read())
 
         c = pymongo.MongoClient(port=port)
