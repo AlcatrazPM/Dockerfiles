@@ -1,10 +1,13 @@
 set /A PORT=27017
+set /A PORTT=27018
 
 
-docker volume create mongodb_data
+docker volume create auth_data
+docker volume create user_data
 
 REM Comment this to use Dockerfile
-docker run --publish %PORT%:27017 --detach -v mongodb_data:/data/db --name mongo mongo
+docker run --publish %PORT%:27017 --detach -v auth_data:/data/db --name auth_db mongo
+docker run --publish %PORTT%:27017 --detach -v user_data:/data/db --name user_db mongo
 
 
 REM Uncomment this to use Dockerfile
