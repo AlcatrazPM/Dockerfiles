@@ -13,10 +13,10 @@ services:
     image: mongo
     hostname: db
     volumes:
-      - "mongodb_data:/data/db"
+      - "auth_data:/data/db"
     ports:
     - "27017:27017"
 
 volumes:
-  mongodb_data:
+  auth_data:
     external: true

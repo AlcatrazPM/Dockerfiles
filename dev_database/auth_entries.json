@@ -1,0 +1,22 @@
+[
+    {
+        "_id": "5e958343240ec114b9b7a597",
+        "email": "vladdnastase@gmail.com",
+        "name": "Vlad Nastase",
+        "date": "2020-04-14 12:32:40.884680",
+        "session_timer": 15,
+        "credential": "3d57e5f0db1443e87fad25c66752b895dcaa250c019bf2e0e9eb9365b59f1443321d73ae53215759c34db97f543efa0dca67fe0ace3adb342644eb1f1fb869a6",
+        "e_dek": "EtDimlhuRFU1mWEq0U0o2A/4tlDg45RwDYHFx9heRKOH9KS6MU2O34hdhF/zjMas",
+        "i_kek": "mvgUTG0W7lvH/44SLC70hfD07127+00yIFgB66UBNNo="
+    },
+    {
+        "_id": "5e958343240ec114b9b7a598",
+        "email": "blankaddress92@gmail.com",
+        "name": "no no",
+        "date": "2020-04-14 12:32:40.884775",
+        "session_timer": 15,
+        "credential": "0f57b9a9d5ca3571a7d8924d30efd9429e7f9d9161676555494b444fcd0f767af65a676e24c01deaf7408fc1523e8a1b3efcc085eae0f5520a796954f8c2ffcd",
+        "e_dek": "CGgHr6iJc4M3fjHnnAmst8s43Eu5zj+/o3OdRXbDYTqMmfdBfCr5W4u4I+tRhRFz",
+        "i_kek": "omcdUjrTGlvZpGTeV/WtO4DeT0EF4cspHX3wq3qH5Pw="
+    }
+]
