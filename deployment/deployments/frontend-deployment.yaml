@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alcatraz-frontend
+spec:
+  selector:
+    matchLabels:
+      app: alcatraz-frontend
+  template:
+    metadata:
+      labels:
+        app: alcatraz-frontend
+    spec:
+      containers:
+      - name: alcatraz-frontend
+        image: thisisv/alcatraz_frontend:kube
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+

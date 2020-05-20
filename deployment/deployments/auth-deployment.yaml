@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alcatraz-auth
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alcatraz-auth
+  template:
+    metadata:
+      labels:
+        app: alcatraz-auth
+    spec:
+      containers:
+      - name: alcatraz-auth
+        image: thisisv/alcatraz_auth:kube
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8082
+        env:
+        - name: ROCKET_ENV
+          value: stage
+        - name: AUTH_DB
+          value: auth-db:27017

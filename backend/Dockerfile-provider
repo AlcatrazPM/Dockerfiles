@@ -1,24 +1,24 @@
 # syntax=docker/dockerfile:1.0-experimental
 FROM rustlang/rust:nightly as cache_builder
-WORKDIR /usr/src/alcatraz_auth
+WORKDIR /usr/src/alcatraz_provider
 RUN USER=root cargo init --vcs none
-COPY ./Backend/authenticator ./authenticator
+COPY ./Backend/accountsprovider ./accountsprovider
 COPY ./Backend/dataprovider ./dataprovider
 COPY ./Backend/jwt ./jwt
 COPY ./Backend/userdata ./userdata
 
-WORKDIR /usr/src/alcatraz_auth/authenticator
+WORKDIR /usr/src/alcatraz_provider/accountsprovider
 RUN --mount=type=cache,target=../../usr/local/cargo/registry\
     --mount=type=cache,target=target \
     cargo build --release
-RUN --mount=type=cache,target=target cp target/release/authenticator /tmp/authenticator
+RUN --mount=type=cache,target=target cp target/release/accountsprovider /tmp/accountsprovider
 
 # RUN cargo install --path .
 
 FROM debian:stretch-slim
-COPY ./Backend/authenticator/Rocket.toml .
-COPY --from=cache_builder /tmp/authenticator .
+COPY ./Backend/accountsprovider/Rocket.toml .
+COPY --from=cache_builder /tmp/accountsprovider .
 ENV ROCKET_ENV=stage
-ENV AUTH_DB=db:27017
-ENTRYPOINT [ "./authenticator" ]
+ENV ACCT_DB=db_acct:27017
+ENTRYPOINT [ "./accountsprovider" ]
 # CMD [ "sh", "-c", "authenticator" ]

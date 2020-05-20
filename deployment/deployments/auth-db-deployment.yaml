@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-db
+spec:
+  # serviceName: auth-db
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+      - name: auth-db
+        image: mongo
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - mountPath: "/data/db"
+            name: auth-claim
+      volumes:
+        - name: auth-claim
+          persistentVolumeClaim:
+              claimName: auth-claim

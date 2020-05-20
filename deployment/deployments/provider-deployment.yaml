@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alcatraz-provider
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alcatraz-provider
+  template:
+    metadata:
+      labels:
+        app: alcatraz-provider
+    spec:
+      containers:
+      - name: alcatraz-provider
+        image: thisisv/alcatraz_provider:kube
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8083
+        env:
+        - name: ROCKET_ENV
+          value: stage
+        - name: ACCT_DB
+          value: provider-db:27017

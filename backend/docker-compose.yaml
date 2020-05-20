@@ -1,14 +1,45 @@
 version: '3.7'
 services:
+  frontend:
+    build:
+      context: ../..
+    image: alcatraz_frontend:latest
+    ports:
+      - "8085:80"
+    networks: 
+      - frontend
   server:
     build:
       context: .
       dockerfile: Dockerfile-auth
     image: alcatraz_auth:latest
+    hostname: server
     ports:
-    - "8082:8082"
-    links:
-      - "db"
+      - "8082:8082"
+    networks:
+      backend:
+        aliases:
+          - server
+      frontend:
+        aliases:
+          - server
+  
+  provider:
+    build:
+      context: .
+      dockerfile: Dockerfile-provider
+    image: alcatraz_provider:latest
+    hostname: provider
+    ports:
+      - "8083:8083"
+    networks:
+      backend_two:
+        aliases:
+          - provider
+      frontend:
+        aliases:
+          - provider
+
   db:
     image: mongo
     hostname: db
@@ -16,7 +47,36 @@ services:
       - "auth_data:/data/db"
     ports:
     - "27017:27017"
+    networks:
+      backend:
+        aliases:
+          - db
+
+  db_acct:
+    image: mongo
+    hostname: db_acct
+    volumes:
+      - "user_data:/data/db"
+    ports:
+    - "27018:27017"
+    networks:
+      backend_two:
+        aliases:
+          - db_acct
 
 volumes:
   auth_data:
     external: true
+  user_data:
+    external: true
+
+networks: 
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
+  backend_two:
+    name: backend_two
+    driver: bridge
