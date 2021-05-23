@@ -102,9 +102,12 @@ services:
         aliases:
           - db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_initdb_root_username
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_initdb_root_password
+      # - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    secrets:
+      - mongo_initdb_root_username
+      - mongo_initdb_root_password
     deploy:
       mode: replicated
       replicas: 1
@@ -123,9 +126,12 @@ services:
         aliases:
           - db_acct
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_initdb_root_username
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_initdb_root_password
+      # - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    secrets:
+      - mongo_initdb_root_username
+      - mongo_initdb_root_password
     deploy:
       mode: replicated
       replicas: 1
@@ -203,3 +209,9 @@ networks:
   agent_network:
     driver: overlay
     attachable: true
+
+secrets:
+  mongo_initdb_root_username:
+    external: true
+  mongo_initdb_root_password:
+    external: true
