@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.0-experimental
 FROM rustlang/rust:nightly as cache_builder
+#RUN rustup override set nightly
 WORKDIR /usr/src/alcatraz_auth
 RUN USER=root cargo init --vcs none
 COPY ./Backend/authenticator ./authenticator
@@ -8,6 +9,8 @@ COPY ./Backend/jwt ./jwt
 COPY ./Backend/userdata ./userdata
 
 WORKDIR /usr/src/alcatraz_auth/authenticator
+RUN rustup update
+RUN cargo update
 RUN --mount=type=cache,target=../../usr/local/cargo/registry\
     --mount=type=cache,target=target \
     cargo build --release
@@ -20,5 +23,7 @@ COPY ./Backend/authenticator/Rocket.toml .
 COPY --from=cache_builder /tmp/authenticator .
 ENV ROCKET_ENV=stage
 ENV AUTH_DB=db:27017
+ENV MONGO_USER=dorel
+ENV MONGO_PASS=doreldorel
 ENTRYPOINT [ "./authenticator" ]
 # CMD [ "sh", "-c", "authenticator" ]

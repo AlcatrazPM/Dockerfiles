@@ -8,6 +8,8 @@ COPY ./Backend/jwt ./jwt
 COPY ./Backend/userdata ./userdata
 
 WORKDIR /usr/src/alcatraz_provider/accountsprovider
+RUN rustup update
+RUN cargo update
 RUN --mount=type=cache,target=../../usr/local/cargo/registry\
     --mount=type=cache,target=target \
     cargo build --release
@@ -20,5 +22,7 @@ COPY ./Backend/accountsprovider/Rocket.toml .
 COPY --from=cache_builder /tmp/accountsprovider .
 ENV ROCKET_ENV=stage
 ENV ACCT_DB=db_acct:27017
+ENV MONGO_USER=dorel
+ENV MONGO_PASS=doreldorel
 ENTRYPOINT [ "./accountsprovider" ]
 # CMD [ "sh", "-c", "authenticator" ]
