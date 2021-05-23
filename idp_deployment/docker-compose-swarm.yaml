@@ -1,0 +1,205 @@
+version: "3.8"
+
+services:
+  agent:
+    image: portainer/agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - agent_network
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer-ce
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - portainer_data:/data
+    networks:
+      - agent_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  frontend:
+    image: thisisv/frontend:final
+    networks:
+      - frontend
+    depends_on:
+      - "server"
+      - "provider"
+    volumes:
+      - ${PWD}/web.env:/usr/share/nginx/html/assets/dotenv
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  server:
+    image: thisisv/auth:final
+    hostname: server
+    networks:
+      backend:
+        aliases:
+          - server
+      frontend:
+        aliases:
+          - server
+    environment:
+      - AUTH_DB=${AUTH_DB}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASS=${MONGO_PASS}
+    depends_on:
+      - "db"
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+        constraints: [node.role != manager]
+
+  provider:
+    image: thisisv/provider:final
+    hostname: provider
+    networks:
+      backend_two:
+        aliases:
+          - provider
+      frontend:
+        aliases:
+          - provider
+    environment:
+      - ACCT_DB=${ACCT_DB}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASS=${MONGO_PASS}
+    depends_on:
+      - "db_acct"
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+        constraints: [node.role != manager]
+
+  db:
+    image: mongo
+    hostname: db
+    volumes:
+      - "auth-data-nfs:/data/db"
+    ports:
+      - "27017:27017"
+    networks:
+      backend:
+        aliases:
+          - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role != manager]
+
+  db_acct:
+    image: mongo
+    hostname: db_acct
+    volumes:
+      - "user-data-nfs:/data/db"
+    ports:
+      - "27018:27017"
+    networks:
+      backend_two:
+        aliases:
+          - db_acct
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role != manager]
+
+  kong:
+    image: kong:latest
+    hostname: kong
+    volumes:
+      - ./kong:/usr/local/kong/declarative
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - 80:8000
+      - 8443:8443
+      - 8001:8001
+      - 8444:8444
+    networks:
+      backend:
+        aliases:
+          - kong
+      backend_two:
+        aliases:
+          - kong
+      frontend:
+        aliases:
+          - kong
+    depends_on:
+      - "adminer"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  adminer:
+    image: dockette/adminer:mongo
+    hostname: adminer
+    ports:
+      - "8888:80"
+    networks:
+      - backend
+      - backend_two
+    depends_on:
+      - "db"
+      - "db_acct"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  portainer_data:
+  auth-data-nfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "nfsvers=4,addr=MANAGER_IP,rw"
+      device: :/database/auth
+  user-data-nfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "nfsvers=4,addr=MANAGER_IP,rw"
+      device: :/database/user
+
+networks:
+  frontend:
+  backend:
+  backend_two:
+  agent_network:
+    driver: overlay
+    attachable: true

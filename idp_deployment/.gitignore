@@ -1,0 +1,6 @@
+.history
+data/**
+*.env*
+web.env
+the_machinez_local.sh
+docker-compose-swarm.yaml2

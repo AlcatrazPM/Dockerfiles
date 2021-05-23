@@ -1,0 +1,30 @@
+_format_version: "2.1"
+
+services:
+  - name: adminer-service
+    url: http://adminer:80
+    routes:
+      - name: adminer-service-route
+        paths:
+          - /adminer
+
+  - name: server
+    url: http://server:8082
+    routes:
+      - name: server-route
+        paths:
+          - /apii/auth
+
+  - name: provider
+    url: http://provider:8083
+    routes:
+      - name: provider-route
+        paths:
+          - /apii/accounts
+
+  - name: frontend
+    url: http://frontend:80
+    routes:
+      - name: frontend-route
+        paths:
+          - /
